@@ -16,20 +16,17 @@ public class WordCountBolt extends BaseBasicBolt {
 
   @Override
   public void execute(Tuple tuple, BasicOutputCollector collector) {
-    /* ----------------------TODO-----------------------
-    Task: word count
-		Hint: using instance variable to tracking the word count
-    ------------------------------------------------- */
-
-		// End
+    String word = tuple.getString(0);
+    Integer count = counts.get(word);
+    if (count == null)
+      count = 0;
+    count++;
+    counts.put(word, count);
+    collector.emit(new Values(word, count));
   }
 
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    /* ----------------------TODO-----------------------
-    Task: declare output fields
-    ------------------------------------------------- */
-
-		// End
+   declarer.declare(new Fields("word", "count"));
   }
 }
