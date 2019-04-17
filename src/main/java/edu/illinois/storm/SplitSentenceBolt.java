@@ -16,15 +16,21 @@ public class SplitSentenceBolt extends BaseBasicBolt {
     Task: split sentence and emit words
 		Hint: split on "[^a-zA-Z0-9-]"
     ------------------------------------------------- */
+	   String sentence = tuple.getString(0);
+	   String[]words=sentence.split("[^0-9a-zA-Z-]");
+	  
+	   for(String word:words){
+            collector.emit(new Values(word));
+       }
+  }
 
 		// End
-  }
+  
 
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    /* ----------------------TODO-----------------------
-    Task: declare output fields
-    ------------------------------------------------- */
+	  declarer.declare(new Fields("word"));
+  
 
 		// End
   }
