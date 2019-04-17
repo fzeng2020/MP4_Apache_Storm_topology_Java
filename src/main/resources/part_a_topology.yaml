@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
+#---
 
 # topology definition
 # name to be used when submitting
@@ -38,48 +38,76 @@ components:
       - 2000
       - "uiuc_cs498_mp4"
       - 0
-
+      
   # TODO
   # Task: implement the redis store mapper
+  - id: "storeMapper"
+    className: "edu.illinois.storm.WordCountStoreMapper"
+    constructorArgs:
+      - "partAWordCount"
   # src/main/java/edu/illinois/storm/WordCountStoreMapper.java
   # redis hash key for part b is "partAWordCount"
-  id: "storeMapper"
-  className: "org.apache.storm.redis.common.config.JedisPoolConfig"
-   constructorArgs:
-     - "localhost"
-     - 6379
-     - 2000
-     - "uiuc_cs498_mp4"
-     - 0
+
 # spout definitions
 spouts:
   # TODO
   # Task: implement the random sentence spout
   # src/main/java/edu/illinois/storm/RandomSentenceSpout.java
+  - id: "spout-1"
+    className: "edu.illinois.storm.RandomSentenceSpout"
+    parallelism: 1
 
 # bolt definitions
 bolts:
   # TODO
   # Task: implement the split sentences bolt
   # src/main/java/edu/illinois/storm/SplitSentenceBolt.java
-
+  - id: "bolt-1"
+    className: "edu.illinois.storm.SplitSentenceBolt"
+    parallelism: 1
+    
   # TODO
   # Task: implement the word count bolt
   # src/main/java/edu/illinois/storm/WordCountBolt.java
-
+  - id: "bolt-2"
+    className: "edu.illinois.storm.WordCountBolt"
+    parallelism: 1
+    
   # TODO
   # Task: initialize RedisStoreBolt using poolConfig and storeMapper
-  # ClassName is "org.apache.storm.redis.bolt.RedisStoreBolt"
+  # ClassName is "org.apache.storm.redis.bolt.RedisStoreBolt"    
+  - id: "bolt-3"
+    className: "org.apache.storm.redis.bolt.RedisStoreBolt"
+    constructorArgs:
+      - ref: "poolConfig"
+      - ref: "storeMapper"
+    parallelism: 1
 
 # stream definitions
 # stream definitions define connections between spouts and bolts.
 streams:
   # TODO
   # Task: pipe output of sentences generating spout to split bolt
-
+  - name: "spout-1 --> bolt-1"
+    from: "spout-1"
+    to: "bolt-1"
+    grouping:
+      type: SHUFFLE
+    
   # TODO
   # Task: pipe output of split bolt to word count bolt
   # Hint: choose the right grouping type to make problem easier
+  - name: "bolt-1 --> bolt-2"
+    from: "bolt-1"
+    to: "bolt-2"
+    grouping:
+      type: FIELDS
+      args: ["word"]
 
   # TODO
   # Task: pipe output of word count bolt to redis store bolt
+  - name: "bolt-2 --> bolt-3"
+    from: "bolt-2"
+    to: "bolt-3"
+    grouping:
+      type: SHUFFLE
