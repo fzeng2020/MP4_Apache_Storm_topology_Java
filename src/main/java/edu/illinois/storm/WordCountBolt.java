@@ -22,6 +22,7 @@ public class WordCountBolt extends BaseBasicBolt {
       count = 0;
     count++;
     counts.put(word, count);
+    
     collector.emit(new Values(word, count));
   }
 
