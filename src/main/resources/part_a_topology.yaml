@@ -43,7 +43,14 @@ components:
   # Task: implement the redis store mapper
   # src/main/java/edu/illinois/storm/WordCountStoreMapper.java
   # redis hash key for part b is "partAWordCount"
-
+  id: "storeMapper"
+  className: "org.apache.storm.redis.common.config.JedisPoolConfig"
+   constructorArgs:
+     - "localhost"
+     - 6379
+     - 2000
+     - "uiuc_cs498_mp4"
+     - 0
 # spout definitions
 spouts:
   # TODO
