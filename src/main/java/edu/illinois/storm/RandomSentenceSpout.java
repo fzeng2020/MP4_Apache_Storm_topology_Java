@@ -31,17 +31,18 @@ public class RandomSentenceSpout extends BaseRichSpout {
 
   public void nextTuple() {
     Utils.sleep(200);
+    String sentence = sentences[_rand.nextInt(sentences.length)];
+    _collector.emit(new Values(sentence));
+  }	  
     /* ----------------------TODO-----------------------
     Task: randomly generate sentence from sentences string array
     ------------------------------------------------- */
 
 		// End
   }
-
+  @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    /* ----------------------TODO-----------------------
-    Task: declare output fields
-    ------------------------------------------------- */
+	  declarer.declare(new Fields("word"));
 
 		// End
   }
