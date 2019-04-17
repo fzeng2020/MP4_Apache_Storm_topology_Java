@@ -23,8 +23,8 @@ public class WordCountStoreMapper implements RedisStoreMapper {
   public String getKeyFromTuple(ITuple tuple) {
     /* ----------------------TODO-----------------------
     Task: define which part of the tuple as the key
-    ------------------------------------------------- */
-		return "";
+    -------------------------------------------------save field-value pairs ({word}, {count}) in hashes partAWordCount  answer below*/
+		return tuple.getStringByField("word");
 		// End
   }
 
@@ -32,8 +32,8 @@ public class WordCountStoreMapper implements RedisStoreMapper {
   public String getValueFromTuple(ITuple tuple) {
     /* ----------------------TODO-----------------------
     Task: define which part of the tuple as the value
-    ------------------------------------------------- */
-		return "";
+    ------------------------------------------------- answer below*/
+		return "tuple.getIntegerByField("count").toString();
 		// End
   }
 }
