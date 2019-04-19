@@ -11,76 +11,91 @@ import org.apache.storm.topology.IRichSpout;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
-
-/** a spout that generate sentences from a file */
 public class FileReaderSpout implements IRichSpout {
-  private SpoutOutputCollector _collector;
-  private TopologyContext _context;
-  private String inputFile;
+    private SpoutOutputCollector collector;
+    private TopologyContext context;
 
-  // Hint: Add necessary instance variables if needed
+    private FileReader fileReader;
+    private boolean isDone = false;
+    
+    @Override
+    public void open(Map config, TopologyContext context, SpoutOutputCollector collector){
 
-  @Override
-  public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
     this._context = context;
     this._collector = collector;
 
-    /* ----------------------TODO-----------------------
-    Task: initialize the file reader
-    ------------------------------------------------- */
-
-    // END
-
-  }
-
-  // Set input file path
-  public FileReaderSpout withInputFileProperties(String inputFile) {
-    this.inputFile = inputFile;
-    return this;
-  }
-
-  @Override
-  public void nextTuple() {
-
-    /* ----------------------TODO-----------------------
-    Task:
-    1. read the next line and emit a tuple for it
-    2. don't forget to add a small sleep when the file is entirely read to prevent a busy-loop
-    ------------------------------------------------- */
-    // END
-  }
-
-  @Override
-  public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    /* ----------------------TODO-----------------------
-    Task: define the declarer
-    ------------------------------------------------- */
-
-    // END
-  }
-
-  @Override
-  public void close() {
-    /* ----------------------TODO-----------------------
-    Task: close the file
-    ------------------------------------------------- */
-
-    // END
+    try{
+		this.fileReader = new FileReader(this.inputFile);
+	     } catch (Exception ex){
+		      throw new RuntimeException("Error reading file");
+     	}
 
   }
 
-  public void fail(Object msgId) {}
+    @Override
+    public void nextTuple(){
+        
+        if(isDone){
+            try {
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e){
+                // interruption is normal
+            }
+        }
+		
+		BufferedReader reader = new BufferedReader(fileReader);
+        String line;
+		
+        try {
+            while ((line = reader.readLine()) != null){
+                line = line.trim();
+                if(line.length() > 0){
+                    collector.emit(new Values(line));
+                }
+            }
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        finally{  
+            isDone = true;
+        }
+    }
 
-  public void ack(Object msgId) {}
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer){
+        declarer.declare(new Fields("word"));
+    }
 
-  @Override
-  public void activate() {}
+    @Override
+    public void close() {
+        try {
+			fileReader.close();
+		} 
+        catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
 
-  @Override
-  public void deactivate() {}
+    @Override
+    public void activate() {
+    }
 
-  @Override
-  public Map<String, Object> getComponentConfiguration() {
-    return null;
-  }
+    @Override
+    public void deactivate() {
+    }
+
+    @Override
+    public void ack(Object msgId) {
+    }
+
+    @Override
+    public void fail(Object msgId) {
+    }
+
+    @Override
+    public Map<String, Object> getComponentConfiguration() {
+        return null;
+    }
 }
