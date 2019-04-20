@@ -44,18 +44,21 @@ components:
       
   # TODO
   # Task: implement the redis store mapper
+  # src/main/java/edu/illinois/storm/WordCountStoreMapper.java
+  # className: "edu.illinois.storm.WordCountStoreMapper"
+  # redis hash key for part b is "partAWordCount"
   - id: "storeMapper"
     className: "edu.illinois.storm.WordCountStoreMapper"
     constructorArgs:
       - "partAWordCount"
-  # src/main/java/edu/illinois/storm/WordCountStoreMapper.java
-  # redis hash key for part b is "partAWordCount"
+
 
 # spout definitions
 spouts:
   # TODO
   # Task: implement the random sentence spout
-  # src/main/java/edu/illinois/storm/RandomSentenceSpout.java
+  # multilang/resources/random_sentence_spout.py
+  # Hint: you need to define output field(s) here when using FluxShellSpout
   - id: "spout-1"
     className: "edu.illinois.storm.RandomSentenceSpout"
     parallelism: 1
