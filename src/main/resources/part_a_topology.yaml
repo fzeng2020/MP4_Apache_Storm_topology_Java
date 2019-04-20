@@ -28,6 +28,9 @@ config:
     # set this to true if you want to see more debug log
     # set it to false before submitting
     topology.debug: false
+    # Hint: you can set input file path here
+    # make sure it's "/tmp/data.txt" in your final submission
+    mp4.datafile: "/tmp/data.txt"
 
 components:
   - id: "poolConfig"
