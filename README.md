@@ -1,22 +1,19 @@
-# Machine Problem 4: Apache Storm
+# Apache Storm
 
 ## 1. Overview
 
-Welcome to the Storm machine practice.
-The final goal of this assignment is to build a topology that finds the top N words in a given corpus.
-We will build the assignment step by step on top of the topology in the tutorial.
+The final goal is to build a topology that finds the top N words in a given corpus.
+
 
 ## 2. General Requirements
 
-All these assignments are designed to work on the **Docker image** that we provide.
+All these are designed to work on the **Docker image** 
 
 # Java submission
 
 ## Overview and Requirements
 
-This assignment is going to build on **Tutorial 4: Introduction to Storm (Java)**.
-It is highly recommended that you practice that tutorial before starting this assignment.
-We are going to use `Storm V1.2.2`, `Redis 5.0.3` and `Open JDK 8`.
+use `Storm V1.2.2`, `Redis 5.0.3` and `Open JDK 8`.
 
 ## Set up the environment
 
@@ -26,9 +23,8 @@ We are going to use `Storm V1.2.2`, `Redis 5.0.3` and `Open JDK 8`.
     docker-machine env
     # follow the instruction to configure your shell: eval $(...)
 
-**Step 2**: Download the Dockerfile and related files for this MP, change the current folder, build, and run the docker image, run:
+**Step 2**: Download the Dockerfile and related files, build, and run the docker image, run:
 
-    git clone https://github.com/UIUC-CS498-Cloud/MP4_docker
     cd MP4_docker
     docker build -t mp4_docker .
 
@@ -36,117 +32,30 @@ We are going to use `Storm V1.2.2`, `Redis 5.0.3` and `Open JDK 8`.
 
 **Step 3**: Download the Java templates and change the current folder, run:
 
-    git clone https://github.com/UIUC-CS498-Cloud/MP4_java_template MP4
     cd MP4
     docker run -it -v "$(pwd)":/mp4/solution mp4_docker
 
-Now, the MP4 template folder has been mapped to `/mp4/solution` in the container.
 
-**Step 4**: Finish the exercises by editing the provided template files. You need to complete the parts marked with **TODO**.
-The template is just our suggestions about how to implement the application.
-You can modify the template at will as long as your solution can be compiled as ran by the command we provide in this instruction.
-Our auto-grade compiles and runs your submission in the same way.
+# A: Simple Word Count Topology
 
-**Step 5**: After finishing the assignment, submit the zip file containing the `MP4` folder.
-The zip file structure should look like:
+build a simple word counter that counts the words a random sentence spout generates.
 
-    Archive:  MP4.zip
-      Length      Date    Time    Name
-    ---------  ---------- -----   ----
-            0  03-13-2019 17:18   MP4/
-        75314  03-13-2019 17:18   MP4/dump.rdb
-         4572  03-13-2019 17:18   MP4/pom.xml
-           19  03-13-2019 17:18   MP4/README.md
-         4415  03-13-2019 17:18   MP4/dependency-reduced-pom.xml
-            0  03-13-2019 17:18   MP4/src/
-            0  03-13-2019 17:18   MP4/src/main/
-            0  03-13-2019 17:18   MP4/src/main/resources/
-         2946  03-13-2019 17:18   MP4/src/main/resources/part_d_topology.yaml
-         2698  03-13-2019 17:18   MP4/src/main/resources/part_c_topology.yaml
-         2494  03-13-2019 17:18   MP4/src/main/resources/part_b_topology.yaml
-         3215  03-13-2019 17:18   MP4/src/main/resources/part_a_topology.yaml
-            0  03-13-2019 17:18   MP4/src/main/java/
-            0  03-13-2019 17:18   MP4/src/main/java/edu/
-            0  03-13-2019 17:18   MP4/src/main/java/edu/illinois/
-            0  03-16-2019 21:31   MP4/src/main/java/edu/illinois/storm/
-         1533  03-13-2019 17:18   MP4/src/main/java/edu/illinois/storm/RandomSentenceSpout.java
-         4198  03-16-2019 21:17   MP4/src/main/java/edu/illinois/storm/TopNFinderBolt.java
-         1199  03-13-2019 17:18   MP4/src/main/java/edu/illinois/storm/TopNStoreMapper.java
-         1210  03-13-2019 17:18   MP4/src/main/java/edu/illinois/storm/WordCountStoreMapper.java
-         1255  03-13-2019 17:18   MP4/src/main/java/edu/illinois/storm/WordCountBolt.java
-         1718  03-13-2019 17:18   MP4/src/main/java/edu/illinois/storm/NormalizerBolt.java
-         1109  03-13-2019 17:18   MP4/src/main/java/edu/illinois/storm/SplitSentenceBolt.java
-         3021  03-16-2019 21:31   MP4/src/main/java/edu/illinois/storm/FileReaderSpout.java
+# B: Input Data from a File
 
-# Exercise A: Simple Word Count Topology
-
-In this exercise, you are going to build a simple word counter that counts the words a random sentence spout generates.
-This first exercise is similar to **Tutorial 4: Introduction to Storm**.
-
-In this exercise, we are going to use the `RandomSentenceSpout` class as the spout, the `SplitSentenceBolt` class to split sentences into words, `WordCountBolt` class to count the words and RedisStoreBolt to save the output in Redis.
-The necessary knowledge has already been covered in the Tutorial.
-
-For the splitter, we split the sentences at any characters other than numbers or letters (`[^a-zA-Z0-9-]`).
-
-To save the output to redis, you should save field-value pairs `({word}, {count})` in hashes `partAWordCount`.
-We've provided you the template in `src/main/java/edu/illinois/storm/WordCountStoreMapper.java`.
-To make it clear, in the auto-grader, we retrieve your answer from Redis by executing script equivalent to:
-
-    # for example, we want to check your count for word "apple"
-    redis-cli -a uiuc_cs498_mp4 HGET partAWordCount apple
-
-You may find the hashes name for the other parts in their template topology yaml files we provide.
-
-You need to implement all components and to wire up these components.
-To make the implementation easier, we have provided boilerplates.
-Keep in mind that the most important task for this part is to master how to set up a storm application.
-
-Note that, when auto-graded, this topology will run for 15 seconds and automatically gets killed after that.
-
-You can build and run the application using the command below inside the container:
-
-    # The template folder will be map to /mp4/solution in the container if you follow our instruction correctly
-    cd /mp4/solution
-    mvn clean package
-    storm jar ./target/storm-example-0.0.1-SNAPSHOT.jar org.apache.storm.flux.Flux --local -R /part_a_topology.yaml -s 15000
-
-If your solution is right, you should see the corresponding result in Redis.
-We suggest you think about how you can debug your solution efficiently.
-
-# Exercise B: Input Data from a File
-
-As can be seen, the spout used in the topology of Exercise A is generating random sentences from a predefined set in the spout’s class.
-However, we want to count words for a given corpus.
-Thus, in this exercise, you are going to create a new spout that reads data from an input file and emits each line as a tuple.
+create a new spout that reads data from an input file and emits each line as a tuple.
 Remember to put a 1-second sleep after reading the whole file to avoid a busy loop.
 
-To make the implementation easier, we have provided a boilerplate for the spout needed in the following file: `src/main/java/edu/illinois/storm/FileReaderSpout.java`.
+
 
 After finishing the implementation of `FileReaderSpout `class, you have to wire up the topology with this new spout.
 
 To make the implementation easier, we have provided a boilerplate for the topology needed in the following file: `src/main/resources/part_b_topology.yaml`.
 
-You need to implement all components and to wire up these components.
-To make the implementation easier, we have provided boilerplates.
+implement all components and to wire up these components.
 
 Note that, when auto-graded, this topology will run for 15 seconds and automatically gets killed after that.
 
-**NOTE**: You probably want to set the number of executors of the spout to “1” so that you don’t read the input file more than once.
-However, you have the freedom to have a different implementation as long as the result is correct.
-
-You can build and run the application using the command below inside the container:
-
-    # The template folder will be map to /mp4/solution in the container if you follow our instruction correctly
-    cd /mp4/solution
-    mvn clean package
-    storm jar ./target/storm-example-0.0.1-SNAPSHOT.jar org.apache.storm.flux.Flux --local -R /part_b_topology.yaml -s 15000
-
-Note that you'll need to set the path of the input file in `part_b_topology.yaml` and then put the input file in the right place.
-We've covered how to pass configuration to spout. You can think about how you can set the input file path in `part_b_topology.yaml`.
-We will put the input data at `/tmp/data.txt` in the auto-grader. You should modify your path accordingly before pack your solution.
-
-If your solution is right, you should see the corresponding result in Redis.
-We suggest you think about how you can debug your solution efficiently and maybe develop some simple tools to help you build some tests.
+see the corresponding result in Redis.
 
 # Exercise C: Normalizer Bolt
 
