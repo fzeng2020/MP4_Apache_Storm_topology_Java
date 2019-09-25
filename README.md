@@ -9,7 +9,7 @@ The final goal is to build a topology that finds the top N words in a given corp
 
 All these are designed to work on the **Docker image** 
 
-# Java submission
+# this is a Java coding project
 
 ## Overview and Requirements
 
